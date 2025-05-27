@@ -116,7 +116,7 @@ export default function Home() {
 
                         (
                             activities.map((item, index) => {
-                                const maxLength = 18;
+                                const maxLength = 30;
                                 const productName = item.product.length > maxLength
                                     ? item.product.slice(0, maxLength) + '...'
                                     : item.product;

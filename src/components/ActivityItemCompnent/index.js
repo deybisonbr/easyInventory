@@ -23,17 +23,6 @@ function ActivityItemCompnent(props) {
                     {movedAt}
                 </DateMovedChecklist>
             </DescriptionActivity>
-            <ActionButtonsActivity>
-                <ActionButtomView onPress={onPressExport}>
-                    <ImageBtn resizeMode="contain" source={viewIcon} />
-                    <TextView>Visualizar</TextView>
-                </ActionButtomView>
-                <ActionButtomEdit onPress={onPressView}>
-                    <ImageBtn resizeMode="contain" source={editIcon} />
-                    <TextEdit>Editar</TextEdit>
-                </ActionButtomEdit>
-
-            </ActionButtonsActivity>
         </ActivityItem>
     )
 }
