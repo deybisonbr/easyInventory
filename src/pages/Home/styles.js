@@ -3,6 +3,8 @@ import styled from "styled-components";
 export const Background = styled.View`
 flex: 1;
 background-color: #F3F4F6;
+justify-content: center;
+align-items: center;
 `;
 export const BackgroundScroll = styled.ScrollView`
 height: 100%;
@@ -26,36 +28,10 @@ min-height: 50px;
 `;
 
 export const BoxActivity = styled.View`
-flex: 6;
 align-items: center;
 justify-content: center;
 `;
 
-
-export const FloatingButton = styled.TouchableOpacity`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background-color: #6A0DAD;
-  width: 75px;
-  height: 75px;
-  border-radius: 100%;
-  justify-content: center;
-  align-items: center;
-  border: 1px;
-  border-color: #B4A2C2;
-
-  elevation: 6;
-  shadow-color: #000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.3;
-  shadow-radius: 4px;
-`;
-
-export const IconFloatBtn = styled.Image`
-height: 45px;
-width: 45px;
-`;
 
 export const ActivityFeed = styled.ScrollView.attrs(() => ({
   contentContainerStyle: {

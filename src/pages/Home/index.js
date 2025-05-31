@@ -110,7 +110,7 @@ export default function Home() {
 
     return (
         <Background>
-            <BackgroundScroll>
+            <BackgroundScroll vertical showsVerticalScrollIndicator={false}>
                 <TitleText>
                     Acesso Rápido
                 </TitleText>
@@ -172,10 +172,6 @@ export default function Home() {
 
 
             </BackgroundScroll>
-
-            <FloatingButton activeOpacity={0.7} onPress={() => newInspection('new')}>
-                <IconFloatBtn resizeMode="contain" source={IconPlus} />
-            </FloatingButton>
             <Modal
                 animationType="slide"
                 transparent={true}
