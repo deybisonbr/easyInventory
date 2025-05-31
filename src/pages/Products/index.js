@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import Product from '../../database/models/Product';
-import { saveProduct } from '../../database/controllers/ProductController';
+import { ProductService } from '../../database/services/ProductService';
 
 
 export default function Products() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
 
+  const productService = new ProductService();
+
   const handleSave = async () => {
     try {
       const now = new Date();
       const newProduct = new Product(name, slug, now, now);
-      await saveProduct(newProduct);
+      await productService.insert(newProduct)
       Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
       setName('');
       setSlug('');

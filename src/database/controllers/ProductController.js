@@ -1,10 +1,7 @@
 import Product from '../models/Product';
-import {
-  insertProduct,
-  updateProduct,
-  deleteProduct,
-  getAllProducts,
-} from '../services/ProductService';
+import {ProductService} from '../services/ProductService';
+
+const productService = new ProductService();
 
 const validate = (product) => {
   if (!product.name) throw new Error('Nome obrigatório');
@@ -12,7 +9,8 @@ const validate = (product) => {
 
 export const saveProduct = async (product) => {
   validate(product);
-  return insertProduct(product);
+  await productService.insert(product);
+  return true
 };
 
 export const removeProduct = async (id) => {

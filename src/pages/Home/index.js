@@ -1,4 +1,4 @@
-import { ActivityFeed, Background, BoxActivity, EmptyItens, FloatingButton, IconFloatBtn, ImageQuickMenu, QuickContentImage, QuickItem, QuickMenu, TextQuickMenu, TitleText } from "./styles";
+import { ActivityFeed, Background, BackgroundScroll, BoxActivity, EmptyItens, FloatingButton, IconFloatBtn, QuickMenu, TitleText } from "./styles";
 import { useNavigation } from "@react-navigation/native";
 
 import ActivityItemCompnent from "../../components/ActivityItemCompnent";
@@ -13,18 +13,42 @@ import IconPlus from '../../assets/img/icons/plus_icon.png'
 import exitStockIcon from '../../assets/img/icons/quickMenu/exit_icon_stock.png'
 import entryStockIcon from '../../assets/img/icons/quickMenu/entry_icon_stock.png'
 import boxIcon from '../../assets/img/icons/quickMenu/box_icon.png'
+import { useState } from "react";
+import { Alert, Modal, } from "react-native";
+import Product from "../../database/models/Product";
+import FormRegisterProduct from "../../components/FormRegisterProduct";
+import { saveProduct } from "../../database/controllers/ProductController";
 
 
 export default function Home() {
 
+    const [visibleRegisterProduct, setVisibleRegisterProduct] = useState(false);
+    const [name, setName] = useState('');
+    const [slug, setSlug] = useState('');
+
     const navigation = useNavigation();
 
-    const {
-        newInspection,
-        searchCheckList,
-        exportCheckList,
-        viewCheckList,
-    } = useHomeActions(navigation);
+    // const {
+    //     searchCheckList,
+    //     exportCheckList,
+    //     viewCheckList,
+    // } = useHomeActions(navigation);
+
+
+
+    const handleSave = async () => {
+        try {
+            const now = new Date();
+            const newProduct = new Product(name, slug, now, now);
+            await saveProduct(newProduct)
+            setVisibleRegisterProduct(false)
+            Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
+            setName('');
+            setSlug('');
+        } catch (error) {
+            Alert.alert('Erro ao salvar', error.message);
+        }
+    };
 
     const activities = [
         {
@@ -77,71 +101,97 @@ export default function Home() {
         }
     ];
 
+    function closeForm() {
+        setName('');
+        setSlug('');
+        setVisibleRegisterProduct(false)
+    }
+
 
     return (
         <Background>
-            <TitleText>
-                Acesso Rápido
-            </TitleText>
-            <QuickMenu horizontal showsHorizontalScrollIndicator={false} >
-                <QuickMenuItem
-                    textMenu='Entrada Estoque'
-                    iconMenu={entryStockIcon}
-                    onPress={searchCheckList}
-                />
-                <QuickMenuItem
-                    textMenu='Saida Estoque'
-                    iconMenu={exitStockIcon}
-                    onPress={() => newInspection('car')}
-                />
-                <QuickMenuItem
-                    textMenu='Cadastrar Produto'
-                    iconMenu={boxIcon}
-                    onPress={() => newInspection('moto')}
-                />
-            </QuickMenu>
+            <BackgroundScroll>
+                <TitleText>
+                    Acesso Rápido
+                </TitleText>
+                <QuickMenu horizontal showsHorizontalScrollIndicator={false} >
+                    <QuickMenuItem
+                        textMenu='Entrada Estoque'
+                        iconMenu={entryStockIcon}
+                        onPress={() => {}}
+                    />
+                    <QuickMenuItem
+                        textMenu='Saida Estoque'
+                        iconMenu={exitStockIcon}
+                        onPress={() => {}}
+                    />
+                    <QuickMenuItem
+                        textMenu='Cadastrar Produto'
+                        iconMenu={boxIcon}
+                        onPress={() => setVisibleRegisterProduct(true)}
+                    />
+                </QuickMenu>
 
-            <TitleText>
-                Atividades Recentes
-            </TitleText>
-            <BoxActivity>
-                <ActivityFeed vertical showsVerticalScrollIndicator={false} >
+                <TitleText>
+                    Atividades Recentes
+                </TitleText>
+                <BoxActivity>
+                    <ActivityFeed vertical showsVerticalScrollIndicator={false} >
 
-                    {activities.length === 0 ?
-                        (
-                            <EmptyItens>
-                                Nenhuma atividade recente
-                            </EmptyItens>
-                        ) :
+                        {activities.length === 0 ?
+                            (
+                                <EmptyItens>
+                                    Nenhuma atividade recente
+                                </EmptyItens>
+                            ) :
 
-                        (
-                            activities.map((item, index) => {
-                                const maxLength = 30;
-                                const productName = item.product.length > maxLength
-                                    ? item.product.slice(0, maxLength) + '...'
-                                    : item.product;
+                            (
+                                activities.map((item, index) => {
+                                    const maxLength = 30;
+                                    const productName = item.product.length > maxLength
+                                        ? item.product.slice(0, maxLength) + '...'
+                                        : item.product;
 
-                                return (
+                                    return (
 
-                                    <ActivityItemCompnent
-                                        key={index}
-                                        iconType={item.type === 'up' ? upStockIcon : downStockIcon}
-                                        product={productName}
-                                        qtd={'Qtd.: ' + item.qtd}
-                                        movedAt={'Data: ' + item.movedAt}
-                                        onPressExport={() => exportCheckList(item.id)}
-                                        onPressView={() => viewCheckList(item.id)}
-                                    />
-                                )
-                            })
-                        )
-                    }
-                </ActivityFeed>
-            </BoxActivity>
+                                        <ActivityItemCompnent
+                                            key={index}
+                                            iconType={item.type === 'up' ? upStockIcon : downStockIcon}
+                                            product={productName}
+                                            qtd={'Qtd.: ' + item.qtd}
+                                            movedAt={'Data: ' + item.movedAt}
+                                            onPressExport={() => exportCheckList(item.id)}
+                                            onPressView={() => viewCheckList(item.id)}
+                                        />
+                                    )
+                                })
+                            )
+                        }
+                    </ActivityFeed>
+                </BoxActivity>
+
+
+            </BackgroundScroll>
 
             <FloatingButton activeOpacity={0.7} onPress={() => newInspection('new')}>
                 <IconFloatBtn resizeMode="contain" source={IconPlus} />
             </FloatingButton>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={visibleRegisterProduct}
+                onRequestClose={() => closeForm()}
+            >
+                <FormRegisterProduct
+                    actionClose={() => closeForm()}
+                    actionSave={() => handleSave()}
+                    name={name}
+                    setName={(text) => setName(text)}
+                    slug={slug}
+                    setSlug={(text) => setSlug(text)}
+                />
+
+            </Modal>
 
         </Background>
     )

@@ -8,7 +8,7 @@ border: 1px;
 border-color: #DAD9D9;
 border-radius: 5px;
 width: 180px;
-height: 120px;
+min-height: 120px;
 margin-left: 8px;
 `;
 

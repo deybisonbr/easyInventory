@@ -4,6 +4,9 @@ export const Background = styled.View`
 flex: 1;
 background-color: #F3F4F6;
 `;
+export const BackgroundScroll = styled.ScrollView`
+height: 100%;
+`;
 
 export const TitleText = styled.Text`
 font-size: 20px;
@@ -19,7 +22,7 @@ font-weight: 600;
 color:rgb(59, 59, 59);
 `;
 export const QuickMenu = styled.ScrollView`
-height: 50px;
+min-height: 50px;
 `;
 
 export const BoxActivity = styled.View`
@@ -28,22 +31,6 @@ align-items: center;
 justify-content: center;
 `;
 
-export const ActivityFeed = styled.ScrollView.attrs(() => ({
-  contentContainerStyle: {
-    paddingBottom: 120,
-  },
-}))`
-background-color: #FFFFFF;
-border-top-left-radius: 5px;
-border-top-right-radius: 5px;
-width: 97%;
-padding: 10px;
-elevation: 6; /* Android */
-shadow-color: #000; /* iOS */
-shadow-offset: 0px 2px;
-shadow-opacity: 0.3;
-shadow-radius: 4px;
-`;
 
 export const FloatingButton = styled.TouchableOpacity`
   position: absolute;
@@ -69,4 +56,23 @@ export const IconFloatBtn = styled.Image`
 height: 45px;
 width: 45px;
 `;
+
+export const ActivityFeed = styled.ScrollView.attrs(() => ({
+  contentContainerStyle: {
+    paddingBottom: 120,
+  },
+}))`
+background-color: #FFFFFF;
+border-top-left-radius: 5px;
+border-top-right-radius: 5px;
+width: 97%;
+padding: 10px;
+elevation: 6; /* Android */
+shadow-color: #000; /* iOS */
+shadow-offset: 0px 2px;
+shadow-opacity: 0.3;
+shadow-radius: 4px;
+`;
+
+
 

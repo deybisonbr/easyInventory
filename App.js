@@ -5,7 +5,7 @@ import { ActivityIndicator, StatusBar, Text, View } from "react-native";
 import Routes from "./src/routes";
 import AuthProvider from "./src/contexts/auth";
 import { useEffect, useState } from 'react';
-import getDBConnection from './src/database/db';
+import { getDBConnection } from './src/database/db';
 
 export default function App() {
 

@@ -3,11 +3,13 @@ import { createTables } from './schema';
 
 SQLite.enablePromise(true);
 
-const getDBConnection = async () => {
+export const getDBConnection = async () => {
   const db = await SQLite.openDatabase({ name: 'easyinventory.db', location: 'default' });
   await createTables(db);
   return db;
 };
 
-
-export default getDBConnection;
+export const runSql = async (sql, params) => {
+  const db = await getDBConnection();
+  return await db.executeSql(sql, params)
+}
