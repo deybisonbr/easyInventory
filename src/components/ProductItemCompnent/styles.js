@@ -22,18 +22,17 @@ margin-right: 10px;
 `;
 export const ProductName = styled.Text`
 font-size: 20px;
-font-weight: 400;
+font-weight: 700;
 margin-bottom: 5px;
 `;
-export const QtdProduct = styled.Text`
+export const IdProduct = styled.Text`
 font-size: 20px;
 font-weight: 500;
-margin-bottom: 5px;
 `;
-export const DateMovedChecklist = styled.Text`
+export const DateCreateProduct = styled.Text`
 font-size: 16px;
-font-weight: 400;
-color: #838383;
+font-weight: 500;
+color:rgb(165, 164, 164);
 `;
 export const ActionButtonsActivity = styled.View`
 flex-direction: column;
@@ -64,4 +63,30 @@ font-weight: 600;
 export const ImageBtn = styled.Image`
 height: 30px;
 width: 30px;
+`;
+
+export const BoxBtnActions = styled.View`
+flex-direction: row;
+align-items: center;
+justify-content: center;
+`;
+
+export const BtnViewProduct = styled.TouchableOpacity`
+border-radius: 5px;
+background-color: #A4BEFF;
+padding: 5px;
+margin-right: 10px;
+`;
+export const BtnViewIcon = styled.Image`
+width: 35px;
+height: 35px;
+`;
+export const BtnEditProduct = styled.TouchableOpacity`
+border-radius: 10px;
+background-color: #FFEE8E;
+padding: 5px;
+`;
+export const BtnEditIcon = styled.Image`
+width: 40px;
+height: 40px;
 `;

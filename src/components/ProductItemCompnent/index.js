@@ -1,4 +1,4 @@
-import { ActionButtomEdit, ActionButtomView, ActionButtonsActivity, ActivityItem, ActivityTipeContent, DateMovedChecklist, DescriptionActivity, IconType, ImageBtn, ProductName, QtdProduct, TextEdit, TextView } from './styles';
+import { ActivityItem, ActivityTipeContent, BoxBtnActions, BtnEditIcon, BtnEditProduct, BtnViewIcon, BtnViewProduct, DateCreateProduct, DateMovedChecklist, DescriptionActivity, IdProduct, ProductName } from './styles';
 
 import editIcon from '../../assets/img/icons/edit_icon.png'
 import viewIcon from '../../assets/img/icons/view_icon.png'
@@ -6,23 +6,30 @@ import viewIcon from '../../assets/img/icons/view_icon.png'
 
 function ProductItemCompnent(props) {
 
-    const {iconType, product, qtd, movedAt,onPressExport, onPressView} = props;
+    const { iconType, product, idProduct, movedAt, onPressExport, onPressView } = props;
     return (
         <ActivityItem>
             <DescriptionActivity>
+                <IdProduct>
+                    {idProduct}
+                </IdProduct>
                 <ActivityTipeContent>
-                    <IconType resizeMode="contain" source={iconType} />
                     <ProductName>
-                       {product}
+                        {product}
                     </ProductName>
                 </ActivityTipeContent>
-                <QtdProduct>
-                    {qtd}
-                </QtdProduct>
-                <DateMovedChecklist>
+                <DateCreateProduct>
                     {movedAt}
-                </DateMovedChecklist>
+                </DateCreateProduct>
             </DescriptionActivity>
+            <BoxBtnActions>
+                <BtnViewProduct>
+                    <BtnViewIcon resizeMode="contain" source={viewIcon} />
+                </BtnViewProduct>
+                <BtnEditProduct>
+                    <BtnEditIcon resizeMode="contain" source={editIcon} />
+                </BtnEditProduct>
+            </BoxBtnActions>
         </ActivityItem>
     )
 }
