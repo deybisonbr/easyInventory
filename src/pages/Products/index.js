@@ -1,115 +1,100 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Modal } from "react-native";
+import { Alert, Modal } from "react-native";
 import FormRegisterProduct from "../../components/FormRegisterProduct";
 
-import upStockIcon from '../../assets/img/icons/quickMenu/up_stock_icon.png'
-import downStockIcon from '../../assets/img/icons/quickMenu/down_stock_icon.png'
-import IconPlus from '../../assets/img/icons/plus_icon.png'
-import SearchIcon from '../../assets/img/icons/search_icon.png'
-import { Background, BackgroundScroll, BoxInputSearch, BoxProducts, BtnSearch, FloatingButton, IconFloatBtn, IconSearch, InputSearch, ProductList, SearchProduct, TitleText } from "./styles";
+import IconPlus from '../../assets/img/icons/plus_icon.png';
+import SearchIcon from '../../assets/img/icons/search_icon.png';
+
+import {
+  Background,
+  BackgroundScroll,
+  BoxInputSearch,
+  BoxProducts,
+  BtnSearch,
+  FloatingButton,
+  IconFloatBtn,
+  IconSearch,
+  InputSearch,
+  ProductList,
+  SearchProduct,
+  TitleText
+} from "./styles";
+
 import ProductItemCompnent from "../../components/ProductItemCompnent";
 import { EmptyItens } from "../Home/styles";
 
+import { saveProduct } from "../../database/controllers/ProductController";
+import Product from "../../database/models/Product";
+import { ProductService } from "../../database/services/ProductService";
+
 export default function Products() {
-
-
-  const activities = [
-    {
-      id: '115484',
-      type: 'up',
-      product: 'Caneta BIC - Preta',
-      slug: 'caneta-bic-p',
-      qtd: '3',
-      movedAt: '23-05-2025 10:00'
-    },
-    {
-      id: '29845',
-      type: 'down',
-      product: 'Caderno Universitário - 100 folhas',
-      slug: 'caderno-universitario-100f',
-      qtd: '1',
-      movedAt: '23-05-2025 11:15'
-    },
-    {
-      id: '33484',
-      type: 'up',
-      product: 'Lápis Faber-Castell nº2',
-      slug: 'lapis-faber-2',
-      qtd: '10',
-      movedAt: '23-05-2025 14:40'
-    },
-    {
-      id: '49832',
-      type: 'down',
-      product: 'Apontador com depósito',
-      slug: 'apontador-deposito',
-      qtd: '2',
-      movedAt: '23-05-2025 15:20'
-    },
-    {
-      id: '51974',
-      type: 'up',
-      product: 'Marca-texto amarelo',
-      slug: 'marca-texto-amarelo',
-      qtd: '5',
-      movedAt: '23-05-2025 16:30'
-    },
-    {
-      id: '69165',
-      type: 'down',
-      product: 'Borracha branca pequena',
-      slug: 'borracha-branca-p',
-      qtd: '4',
-      movedAt: '23-05-2025 17:00'
-    }
-  ];
-
   const [visibleRegisterProduct, setVisibleRegisterProduct] = useState(false);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [searchText, setSearchText] = useState('');
-  const [filteredActivities, setFilteredActivities] = useState(activities);
+  const [products, setProducts] = useState([]);
 
   const navigation = useNavigation();
 
-  // const {
-  //     searchCheckList,
-  //     exportCheckList,
-  //     viewCheckList,
-  // } = useHomeActions(navigation);
+  const loadProducts = async () => {
+    try {
+      const service = new ProductService();
+      const allProducts = await service.getAll();
 
+      const mapped = allProducts.map((prod) => ({
+        id: String(prod.id),
+        product: prod.name,
+        slug: prod.slug,
+        movedAt: '', // ou preencha com algo se quiser mostrar data
+      }));
+
+      setProducts(mapped);
+    } catch (error) {
+      Alert.alert('Erro ao carregar produtos', error.message);
+    }
+  };
 
   useEffect(() => {
-    // Mostra todos inicialmente
-    setFilteredActivities(activities);
+    loadProducts();
   }, []);
+
+  const handleSave = async () => {
+    try {
+      const now = new Date();
+      const newProduct = new Product(name, slug, now, now);
+      await saveProduct(newProduct);
+      await loadProducts(); // recarrega a lista
+      setVisibleRegisterProduct(false);
+      setName('');
+      setSlug('');
+      Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
+    } catch (error) {
+      Alert.alert('Erro ao salvar', error.message);
+    }
+  };
 
   const handleSearch = () => {
     const text = searchText.trim().toLowerCase();
 
     if (text === '') {
-      setFilteredActivities(activities);
-      return;
+      return products;
     }
 
-    const filtered = activities.filter(item =>
+    return products.filter(item =>
       item.id.includes(text) || item.product.toLowerCase().includes(text)
     );
-
-    setFilteredActivities(filtered);
   };
 
-  function closeForm() {
-    setName('');
-    setSlug('');
-    setVisibleRegisterProduct(false);
-  }
+  const viewProduct = (id) => {
+    Alert.alert("Visualizar", `Visualizar produto com ID: ${id}`);
+  };
 
-  function handleSave() {
-    closeForm();
-  }
+  const editProduct = (id) => {
+    Alert.alert("Editar", `Editar produto com ID: ${id}`);
+  };
 
+  const filtered = handleSearch();
 
   return (
     <Background>
@@ -118,85 +103,65 @@ export default function Products() {
           <InputSearch
             placeholder="ID ou Nome do produto"
             value={searchText}
-            onChangeText={(text) => {
-              setSearchText(text);
-
-              const filtered = activities.filter(item =>
-                item.id.includes(text.trim()) ||
-                item.product.toLowerCase().includes(text.trim().toLowerCase())
-              );
-
-              if (text.trim() === '') {
-                setFilteredActivities(activities);
-              } else {
-                setFilteredActivities(filtered);
-              }
-            }}
+            onChangeText={setSearchText}
           />
-          <BtnSearch activeOpacity={0.8} onPress={handleSearch}>
+          <BtnSearch activeOpacity={0.8} onPress={() => { }}>
             <IconSearch resizeMode="contain" source={SearchIcon} />
           </BtnSearch>
-
         </BoxInputSearch>
       </SearchProduct>
 
-      <TitleText>
-        Produtos Cadastrados
-      </TitleText>
+      <TitleText>Produtos Cadastrados</TitleText>
+
       <BackgroundScroll vertical showsVerticalScrollIndicator={false}>
         <BoxProducts>
           <ProductList vertical showsVerticalScrollIndicator={false}>
-            {filteredActivities.length === 0 ? (
+            {filtered.length === 0 ? (
               <EmptyItens>
                 Nenhum produto encontrado
               </EmptyItens>
             ) : (
-              filteredActivities.map((item, index) => {
+              filtered.map((item, index) => {
                 const maxLength = 20;
                 const productName = item.product.length > maxLength
                   ? item.product.slice(0, maxLength) + '...'
                   : item.product;
 
                 return (
-
                   <ProductItemCompnent
-                    key={index}
+                    key={item.id}
                     product={productName}
                     idProduct={item.id}
                     movedAt={item.movedAt}
-                    onPressExport={() => exportCheckList(item.id)}
-                    onPressView={() => viewCheckList(item.id)}
+                    onPressView={() => viewProduct(item.id)}
+                    onPressEdit={() => editProduct(item.id)}
                   />
-                )
+              );
               })
-            )
-            }
+            )}
           </ProductList>
         </BoxProducts>
-
-
       </BackgroundScroll>
 
-      <FloatingButton activeOpacity={0.7} onPress={() => { }}>
+      <FloatingButton activeOpacity={0.7} onPress={() => setVisibleRegisterProduct(true)}>
         <IconFloatBtn resizeMode="contain" source={IconPlus} />
       </FloatingButton>
+
       <Modal
         animationType="slide"
         transparent={true}
         visible={visibleRegisterProduct}
-        onRequestClose={() => closeForm()}
+        onRequestClose={() => setVisibleRegisterProduct(false)}
       >
         <FormRegisterProduct
-          actionClose={() => closeForm()}
-          actionSave={() => handleSave()}
+          actionClose={() => setVisibleRegisterProduct(false)}
+          actionSave={handleSave}
           name={name}
-          setName={(text) => setName(text)}
+          setName={setName}
           slug={slug}
-          setSlug={(text) => setSlug(text)}
+          setSlug={setSlug}
         />
-
       </Modal>
-
     </Background>
-  )
+  );
 }

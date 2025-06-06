@@ -7,6 +7,8 @@ export class ProductService {
   }
 
   async insert(product) {
+    product.id = await this.generateUniqueId();
+
     const sql = `
       INSERT INTO ${this.table} 
       (id, name, slug, created_at, updated_at, deleted)
@@ -21,6 +23,7 @@ export class ProductService {
       product.deleted
     ];
     await runSql(sql, params);
+
   }
 
   async update(product) {
@@ -45,16 +48,39 @@ export class ProductService {
   }
 
   async getAll() {
-    const sql = `SELECT * FROM ${this.table}`;
+    const sql = `SELECT * FROM ${this.table} WHERE deleted = 0`;
     const results = await runSql(sql);
+
     const items = [];
 
-    results.forEach(([result]) => {
-      for (let i = 0; i < result.rows.length; i++) {
+    results.forEach(result => {
+      const len = result.rows.length;
+      for (let i = 0; i < len; i++) {
         items.push(result.rows.item(i));
       }
     });
 
     return items;
   }
+
+  async generateUniqueId() {
+    let id;
+    let exists = true;
+
+    while (exists) {
+      id = Math.floor(100000 + Math.random() * 900000); // Número de 6 dígitos
+      const sql = `SELECT COUNT(*) as count FROM ${this.table} WHERE id = ?`;
+      const result = await runSql(sql, [id]);
+
+      let count = 0;
+      if (result && result.rows && result.rows.length > 0) {
+        count = result.rows.item(0).count;
+      }
+
+      exists = count > 0;
+    }
+
+    return id;
+  }
+
 }

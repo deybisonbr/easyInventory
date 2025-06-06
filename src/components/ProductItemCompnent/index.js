@@ -6,7 +6,7 @@ import viewIcon from '../../assets/img/icons/view_icon.png'
 
 function ProductItemCompnent(props) {
 
-    const { iconType, product, idProduct, movedAt, onPressExport, onPressView } = props;
+    const { iconType, product, idProduct, movedAt, onPressEdit, onPressView } = props;
     return (
         <ActivityItem>
             <DescriptionActivity>
@@ -23,10 +23,10 @@ function ProductItemCompnent(props) {
                 </DateCreateProduct>
             </DescriptionActivity>
             <BoxBtnActions>
-                <BtnViewProduct>
+                <BtnViewProduct onPress={onPressView}>
                     <BtnViewIcon resizeMode="contain" source={viewIcon} />
                 </BtnViewProduct>
-                <BtnEditProduct>
+                <BtnEditProduct onPress={onPressEdit}>
                     <BtnEditIcon resizeMode="contain" source={editIcon} />
                 </BtnEditProduct>
             </BoxBtnActions>
