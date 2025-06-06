@@ -48,7 +48,7 @@ export class ProductService {
   }
 
   async getAll() {
-    const sql = `SELECT * FROM ${this.table} WHERE deleted = 0`;
+    const sql = `SELECT * FROM ${this.table} WHERE deleted = 0 ORDER BY created_at DESC`;
     const results = await runSql(sql);
 
     const items = [];

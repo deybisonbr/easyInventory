@@ -27,6 +27,7 @@ import { EmptyItens } from "../Home/styles";
 import { saveProduct } from "../../database/controllers/ProductController";
 import Product from "../../database/models/Product";
 import { ProductService } from "../../database/services/ProductService";
+import ProductDetailsModal from "../../components/ProductDetailsModal";
 
 export default function Products() {
   const [visibleRegisterProduct, setVisibleRegisterProduct] = useState(false);
@@ -34,6 +35,8 @@ export default function Products() {
   const [slug, setSlug] = useState('');
   const [searchText, setSearchText] = useState('');
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modeModal, setModeModal] = useState(null);
 
   const navigation = useNavigation();
 
@@ -46,7 +49,8 @@ export default function Products() {
         id: String(prod.id),
         product: prod.name,
         slug: prod.slug,
-        movedAt: '', // ou preencha com algo se quiser mostrar data
+        created_at: prod.created_at,
+        updated_at: prod.updated_at,
       }));
 
       setProducts(mapped);
@@ -96,6 +100,21 @@ export default function Products() {
 
   const filtered = handleSearch();
 
+const formatDateTimeFull = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // mês começa do zero
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
   return (
     <Background>
       <SearchProduct>
@@ -132,11 +151,29 @@ export default function Products() {
                     key={item.id}
                     product={productName}
                     idProduct={item.id}
-                    movedAt={item.movedAt}
-                    onPressView={() => viewProduct(item.id)}
-                    onPressEdit={() => editProduct(item.id)}
+                    movedAt={formatDateTimeFull(item.created_at)}
+                    onPressView={() => {
+                      setSelectedProduct({
+                        id: item.id,
+                        name: item.product,
+                        slug: item.slug,
+                        created_at: item.created_at,
+                        updated_at: item.updated_at,
+                      });
+                      setModeModal('view');
+                    }}
+                    onPressEdit={() => {
+                      setSelectedProduct({
+                        id: item.id,
+                        name: item.product,
+                        slug: item.slug,
+                        created_at: item.created_at,
+                        updated_at: item.updated_at,
+                      });
+                      setModeModal('edit');
+                    }}
                   />
-              );
+                );
               })
             )}
           </ProductList>
@@ -162,6 +199,21 @@ export default function Products() {
           setSlug={setSlug}
         />
       </Modal>
+
+      <ProductDetailsModal
+        visible={modeModal !== null}
+        onClose={() => {
+          setModeModal(null);
+          setSelectedProduct(null);
+        }}
+        mode={modeModal}
+        product={selectedProduct}
+        onSave={(updatedProduct) => {
+          console.log("📦 Produto atualizado:", updatedProduct);
+          Alert.alert("Sucesso", "Produto atualizado!");
+          setModeModal(null);
+        }}
+      />
     </Background>
   );
 }
