@@ -10,7 +10,9 @@ import {
   Input,
   ButtonSave,
   ButtonSaveText,
-  ValueText
+  ValueText,
+  ButtonDelete,
+  ButtonDeleteText
 } from './styles'; // crie os estilos conforme preferir
 
 import closeIcon from '../../assets/img/icons/close_icons.png';
@@ -21,7 +23,8 @@ const ProductDetailsModal = ({
   onClose,
   mode = 'view', // 'view' ou 'edit'
   product,
-  onSave
+  onSave,
+  onDelete
 }) => {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -47,6 +50,17 @@ const ProductDetailsModal = ({
     };
 
     onSave(updatedProduct);
+  };
+
+
+  const handleDelete = () => {
+    const deleteProduct = {
+      ...product,
+      deleted: 1,
+      updated_at: new Date()
+    };
+
+    onDelete(deleteProduct);
   };
 
   return (
@@ -87,6 +101,12 @@ const ProductDetailsModal = ({
             <ButtonSave onPress={handleSave}>
               <ButtonSaveText>Salvar</ButtonSaveText>
             </ButtonSave>
+          )}
+
+          {mode === 'view' && (
+            <ButtonDelete onPress={handleDelete}>
+              <ButtonDeleteText>Deletar</ButtonDeleteText>
+            </ButtonDelete>
           )}
         </Content>
       </Container>

@@ -100,20 +100,20 @@ export default function Products() {
 
   const filtered = handleSearch();
 
-const formatDateTimeFull = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
+  const formatDateTimeFull = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
 
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // mês começa do zero
-  const year = date.getFullYear();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // mês começa do zero
+    const year = date.getFullYear();
 
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-};
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
 
   return (
     <Background>
@@ -208,10 +208,34 @@ const formatDateTimeFull = (dateString) => {
         }}
         mode={modeModal}
         product={selectedProduct}
-        onSave={(updatedProduct) => {
-          console.log("📦 Produto atualizado:", updatedProduct);
-          Alert.alert("Sucesso", "Produto atualizado!");
-          setModeModal(null);
+        onSave={async (updatedProduct) => {
+          try {
+            const service = new ProductService();
+            await service.update(updatedProduct);
+
+            await loadProducts();
+            Alert.alert("Sucesso", "Produto atualizado!");
+          } catch (error) {
+            Alert.alert("Erro", error.message);
+          } finally {
+            setModeModal(null);
+            setSelectedProduct(null);
+          }
+        }}
+
+        onDelete={async (deleteProduct) => {
+          try {
+            const service = new ProductService();
+            await service.update(deleteProduct);
+
+            await loadProducts();
+            Alert.alert("Sucesso", "Produto atualizado!");
+          } catch (error) {
+            Alert.alert("Erro", error.message);
+          } finally {
+            setModeModal(null);
+            setSelectedProduct(null);
+          }
         }}
       />
     </Background>

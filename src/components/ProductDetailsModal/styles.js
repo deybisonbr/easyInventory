@@ -71,3 +71,16 @@ export const ButtonSaveText = styled.Text`
   font-weight: bold;
   font-size: 16px;
 `;
+export const ButtonDelete = styled.TouchableOpacity`
+  margin-top: 25px;
+  background-color: rgb(182, 0, 0);
+  padding: 12px;
+  border-radius: 6px;
+  align-items: center;
+`;
+
+export const ButtonDeleteText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 16px;
+`;

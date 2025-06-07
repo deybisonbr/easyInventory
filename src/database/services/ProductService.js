@@ -27,6 +27,9 @@ export class ProductService {
   }
 
   async update(product) {
+    if(!product.deleted){
+      product.deleted = 0
+    }
     const sql = `
       UPDATE ${this.table}
       SET name = ?, slug = ?, updated_at = ?, deleted = ?
