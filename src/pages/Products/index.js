@@ -229,7 +229,7 @@ export default function Products() {
             await service.update(deleteProduct);
 
             await loadProducts();
-            Alert.alert("Sucesso", "Produto atualizado!");
+            Alert.alert("Sucesso", "Deletado com sucesso!");
           } catch (error) {
             Alert.alert("Erro", error.message);
           } finally {

@@ -53,15 +53,31 @@ const ProductDetailsModal = ({
   };
 
 
-  const handleDelete = () => {
-    const deleteProduct = {
-      ...product,
-      deleted: 1,
-      updated_at: new Date()
-    };
-
-    onDelete(deleteProduct);
-  };
+const handleDelete = () => {
+  Alert.alert(
+    "Confirmação",
+    "Tem certeza que deseja deletar este produto?",
+    [
+      {
+        text: "Cancelar",
+        style: "cancel"
+      },
+      {
+        text: "Deletar",
+        style: "destructive",
+        onPress: () => {
+          const deleteProduct = {
+            ...product,
+            deleted: 1,
+            updated_at: new Date()
+          };
+          onDelete(deleteProduct);
+        }
+      }
+    ],
+    { cancelable: true }
+  );
+};
 
   return (
     <Modal animationType="slide" transparent visible={visible}>

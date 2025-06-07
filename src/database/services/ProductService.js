@@ -45,11 +45,6 @@ export class ProductService {
     await runSql(sql, params);
   }
 
-  async delete(id) {
-    const sql = `DELETE FROM ${this.table} WHERE id = ?`;
-    await runSql(sql, [id]);
-  }
-
   async getAll() {
     const sql = `SELECT * FROM ${this.table} WHERE deleted = 0 ORDER BY created_at DESC`;
     const results = await runSql(sql);
