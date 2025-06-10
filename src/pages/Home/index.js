@@ -13,11 +13,14 @@ import IconPlus from '../../assets/img/icons/plus_icon.png'
 import exitStockIcon from '../../assets/img/icons/quickMenu/exit_icon_stock.png'
 import entryStockIcon from '../../assets/img/icons/quickMenu/entry_icon_stock.png'
 import boxIcon from '../../assets/img/icons/quickMenu/box_icon.png'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Modal, } from "react-native";
 import Product from "../../database/models/Product";
 import FormRegisterProduct from "../../components/FormRegisterProduct";
 import { saveProduct } from "../../database/controllers/ProductController";
+import FormStockMovement from "../../components/FormStockMovement";
+import { ProductService } from "../../database/services/ProductService";
+import { StockMovementService } from "../../database/services/StockMovementService";
 
 
 export default function Home() {
@@ -25,6 +28,14 @@ export default function Home() {
     const [visibleRegisterProduct, setVisibleRegisterProduct] = useState(false);
     const [name, setName] = useState('');
     const [slug, setSlug] = useState('');
+    const [visibleStockIn, setVisibleStockIn] = useState(false);
+    const [visibleStockOut, setVisibleStockOut] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [note, setNote] = useState('');
+    const [products, setProducts] = useState([]);
+    const [activities, setActivities] = useState([]);
+
 
     const navigation = useNavigation();
 
@@ -50,62 +61,86 @@ export default function Home() {
         }
     };
 
-    const activities = [
-        {
-            id: '1',
-            type: 'up',
-            product: 'Caneta BIC - Preta',
-            slug: 'caneta-bic-p',
-            qtd: '3',
-            movedAt: '23-05-2025 10:00'
-        },
-        {
-            id: '2',
-            type: 'down',
-            product: 'Caderno Universitário - 100 folhas',
-            slug: 'caderno-universitario-100f',
-            qtd: '1',
-            movedAt: '23-05-2025 11:15'
-        },
-        {
-            id: '3',
-            type: 'up',
-            product: 'Lápis Faber-Castell nº2',
-            slug: 'lapis-faber-2',
-            qtd: '10',
-            movedAt: '23-05-2025 14:40'
-        },
-        {
-            id: '4',
-            type: 'down',
-            product: 'Apontador com depósito',
-            slug: 'apontador-deposito',
-            qtd: '2',
-            movedAt: '23-05-2025 15:20'
-        },
-        {
-            id: '5',
-            type: 'up',
-            product: 'Marca-texto amarelo',
-            slug: 'marca-texto-amarelo',
-            qtd: '5',
-            movedAt: '23-05-2025 16:30'
-        },
-        {
-            id: '6',
-            type: 'down',
-            product: 'Borracha branca pequena',
-            slug: 'borracha-branca-p',
-            qtd: '4',
-            movedAt: '23-05-2025 17:00'
-        }
-    ];
-
     function closeForm() {
         setName('');
         setSlug('');
         setVisibleRegisterProduct(false)
     }
+
+
+    const loadProducts = async () => {
+        try {
+            const service = new ProductService();
+            const allProducts = await service.getAll();
+
+            const mapped = allProducts.map((prod) => ({
+                id: String(prod.id),
+                product: prod.name,
+                slug: prod.slug,
+                created_at: prod.created_at,
+                updated_at: prod.updated_at,
+            }));
+
+            setProducts(mapped);
+        } catch (error) {
+            Alert.alert('Erro ao carregar produtos', error.message);
+        }
+    };
+
+    const loadMovements = async () => {
+        try {
+            const movimenService = new StockMovementService();
+            const allMovements = await movimenService.getAllMovements();
+
+            const mappedMovements = allMovements.map((move) => ({
+                id: String(move.id),
+                type: move.type,
+                product: move.product || 'Produto desconhecido',
+                qtd: move.quantity,
+                movedAt: new Date(move.created_at).toLocaleDateString(),
+            }));
+
+            setActivities(mappedMovements);
+        } catch (error) {
+            Alert.alert('Erro ao carregar produtos', error.message);
+        }
+    };
+
+    useEffect(() => {
+        loadProducts();
+        loadMovements();
+    }, []);
+
+
+    const clearForm = () => {
+        setSelectedProduct('');
+        setQuantity('');
+        setNote('');
+    };
+
+const handleSaveMovement = async (type) => {
+    if (!selectedProduct || !quantity) {
+        Alert.alert('Erro', 'Selecione um produto e informe a quantidade.');
+        return;
+    }
+
+    try {
+        const service = new StockMovementService(); // <- instância da classe
+        await service.saveStockMovement({
+            product_id: selectedProduct,
+            quantity,
+            type,
+            note
+        });
+
+        Alert.alert('Sucesso', 'Movimentação registrada!');
+        clearForm();
+        type === 'in' ? setVisibleStockIn(false) : setVisibleStockOut(false);
+        loadMovements(); // <- recarrega atividades após salvar
+    } catch (error) {
+        Alert.alert('Erro', error.message);
+    }
+};
 
 
     return (
@@ -118,12 +153,12 @@ export default function Home() {
                     <QuickMenuItem
                         textMenu='Entrada Estoque'
                         iconMenu={entryStockIcon}
-                        onPress={() => {}}
+                        onPress={() => setVisibleStockIn(true)}
                     />
                     <QuickMenuItem
                         textMenu='Saida Estoque'
                         iconMenu={exitStockIcon}
-                        onPress={() => {}}
+                        onPress={() => setVisibleStockOut(true)}
                     />
                     <QuickMenuItem
                         textMenu='Cadastrar Produto'
@@ -155,8 +190,8 @@ export default function Home() {
                                     return (
 
                                         <ActivityItemCompnent
-                                            key={index}
-                                            iconType={item.type === 'up' ? upStockIcon : downStockIcon}
+                                            key={item.id}
+                                            iconType={item.type === 'in' ? upStockIcon : downStockIcon}
                                             product={productName}
                                             qtd={'Qtd.: ' + item.qtd}
                                             movedAt={'Data: ' + item.movedAt}
@@ -187,6 +222,52 @@ export default function Home() {
                     setSlug={(text) => setSlug(text)}
                 />
 
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={visibleStockIn}
+                onRequestClose={() => setVisibleStockIn(false)}
+            >
+                <FormStockMovement
+                    type="in"
+                    products={products}
+                    selectedProduct={selectedProduct}
+                    setSelectedProduct={setSelectedProduct}
+                    quantity={quantity}
+                    setQuantity={setQuantity}
+                    note={note}
+                    setNote={setNote}
+                    actionClose={() => {
+                        clearForm();
+                        setVisibleStockIn(false);
+                    }}
+                    actionSave={() => handleSaveMovement('in')}
+                />
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={visibleStockOut}
+                onRequestClose={() => setVisibleStockOut(false)}
+            >
+                <FormStockMovement
+                    type="out"
+                    products={products}
+                    selectedProduct={selectedProduct}
+                    setSelectedProduct={setSelectedProduct}
+                    quantity={quantity}
+                    setQuantity={setQuantity}
+                    note={note}
+                    setNote={setNote}
+                    actionClose={() => {
+                        clearForm();
+                        setVisibleStockOut(false);
+                    }}
+                    actionSave={() => handleSaveMovement('out')}
+                />
             </Modal>
 
         </Background>
